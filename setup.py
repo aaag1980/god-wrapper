@@ -9,7 +9,7 @@ DESCRIPTION = 'A simple, lightweight and efficient API wrapper for Poe.com'
 LONG_DESCRIPTION = '👾 A Python API wrapper for Poe.com. With this, you will have free access to ChatGPT, Claude, Llama, Gemini, Google-PaLM and more! 🚀'
 
 setup(
-    name="god-wrapper",
+    name="poe-api-wrapper",
     version=VERSION,
     author="snowby666",
     description=DESCRIPTION,
