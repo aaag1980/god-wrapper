@@ -385,7 +385,10 @@ class AsyncPoeApi:
         id = None
         title = None
         if bot not in self.current_thread:
-            self.current_thread[bot] = await self.get_chat_history(bot=bot)['data'][bot]
+            #GODINHO
+            chat_history = await self.get_chat_history(bot=bot)
+            self.current_thread[bot] = chat_history['data'][bot]
+            #self.current_thread[bot] = await self.get_chat_history(bot=bot)['data'][bot]
         elif len(self.current_thread[bot]) <= 1:
             self.current_thread[bot] = await self.get_chat_history(bot=bot)['data'][bot]
         if chatCode != None:
