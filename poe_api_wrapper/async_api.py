@@ -252,6 +252,10 @@ class AsyncPoeApi:
             logger.exception(f"Failed to parse message: {msg}")
             self.disconnect_ws()
             asyncio.get_event_loop().run_until_complete(self.connect_ws())
+            
+    async def get_remaining_points(self):
+        response_json = await self.send_request('gql_POST', 'SettingsPageQuery', {})
+        return response_json["data"]["viewer"]["messagePointInfo"]
     
     async def get_available_bots(self, count: int=25, get_all: bool=False):
         self.bots = {}
@@ -385,10 +389,7 @@ class AsyncPoeApi:
         id = None
         title = None
         if bot not in self.current_thread:
-            #GODINHO
-            chat_history = await self.get_chat_history(bot=bot)
-            self.current_thread[bot] = chat_history['data'][bot]
-            #self.current_thread[bot] = await self.get_chat_history(bot=bot)['data'][bot]
+            self.current_thread[bot] = await self.get_chat_history(bot=bot)['data'][bot]
         elif len(self.current_thread[bot]) <= 1:
             self.current_thread[bot] = await self.get_chat_history(bot=bot)['data'][bot]
         if chatCode != None:
@@ -442,9 +443,8 @@ class AsyncPoeApi:
             await asyncio.sleep(0.5)
             response_json = await self.send_request('gql_POST', 'ChatPageQuery', variables)
             hasSuggestedReplies = response_json['data']['chatOfCode']['defaultBotObject']['mayHaveSuggestedReplies']
-            edges = response_json['data']['chatOfCode']['messagesConnection']['edges']
-            if hasSuggestedReplies and edges:
-                latest_message = edges[-1]['node']
+            latest_message = response_json['data']['chatOfCode']['lastMessage']
+            if hasSuggestedReplies and latest_message:
                 suggestions = latest_message['suggestedReplies']
                 state = latest_message['state']
                 if state == 'complete' and suggestions:
